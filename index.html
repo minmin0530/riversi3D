@@ -1,0 +1,219 @@
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/88/three.min.js"></script>
+  <script src="http://threejs.org/examples/js/controls/OrbitControls.js"></script>
+  <script>
+    // ページの読み込みを待つ
+    window.addEventListener('load', init);
+    var field = [];
+    var turn = 0;
+    const C = 6;
+
+    function tipOver(turn, x, y, z) {
+
+  const addx = [1,  1,  1,  1,  1,  1,  1,  1,  1,    0,  0,  0,  0,  0,  0,  0,  0,     -1, -1, -1, -1, -1, -1, -1, -1, -1];
+  const addy = [1,  1,  1,  0,  0,  0, -1, -1, -1,    1,  1,  1,  0,  0, -1, -1, -1,      1,  1,  1,  0,  0,  0, -1, -1, -1];
+  const addz = [1,  0, -1,  1,  0, -1,  1,  0, -1,    1,  0, -1,  1, -1,  1,  0, -1,      1,  0, -1,  1,  0, -1,  1,  0, -1];
+
+  const rangex = [-1, -1, -1, -1, -1, -1, -1, -1, -1,    C,  C,  C,  C,  C,  C,  C,  C,   C,  C,  C,  C,  C,  C,  C,  C,  C];
+  const rangey = [-1, -1, -1,  C,  C,  C,  C,  C,  C,   -1, -1, -1,  C,  C,  C,  C,  C,  -1, -1, -1,  C,  C,  C,  C,  C,  C];
+  const rangez = [-1,  C,  C, -1,  C,  C, -1,  C,  C,   -1,  C,  C, -1,  C, -1,  C,  C,  -1,  C,  C, -1,  C,  C, -1,  C,  C];
+  field[z][y][x] = turn;
+  for (var v = 0; v < 26; ++v) {
+    for (var xx = x - addx[v], yy = y - addy[v], zz = z - addz[v]; xx != rangex[v] && yy != rangey[v] && zz != rangez[v]; xx -= addx[v], yy -= addy[v], zz -= addz[v]) {
+      var breakFlag = false;
+      if (field[zz][yy][xx] == turn) {
+        for (var nonex = xx, noney = yy, nonez = zz; (nonex != x || addx[v] == 0) && (noney != y || addy[v] == 0) && (nonez != z || addz[v] == 0); nonex += addx[v], noney += addy[v], nonez += addz[v] ) {
+          if (field[nonez][noney][nonex] == -1) {
+            breakFlag = true;
+            break;
+	      }
+	    }
+        if (breakFlag) {
+          break;
+	    }
+        for (var xxx = x, yyy = y, zzz = z; (xxx != xx || addx[v] == 0) && (yyy != yy || addy[v] == 0) && (zzz != zz || addz[v] == 0); xxx -= addx[v], yyy -= addy[v], zzz -= addz[v]) {
+          field[zzz][yyy][xxx] = turn;
+	    }  
+        break;
+      }
+    }
+  }
+}
+
+    function init() {
+      // サイズを指定
+      const width = 1280;
+      const height = 960;
+
+      // マウス座標管理用のベクトルを作成
+      const mouse = new THREE.Vector2();
+      var look = [];
+      for (var x = -0.4; x <= 0.4; x += 0.8) {
+      for (var y = -0.4; y <= 0.4; y += 0.8) {
+      look.push( new THREE.Vector2(x, y) );
+      }
+      }
+      look.push( new THREE.Vector2(0.0, 0.0) );
+      // canvas 要素の参照を取得する
+      const canvas = document.querySelector('#myCanvas');
+
+      // レンダラーを作成
+      const renderer = new THREE.WebGLRenderer({
+        canvas: canvas
+      });
+      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setSize(width, height);
+      renderer.setClearColor(0xccffcc, 1.0);
+      // シーンを作成
+      const scene = new THREE.Scene();
+
+      // カメラを作成
+      const camera = new THREE.PerspectiveCamera(45, width / height);
+      camera.position.set(C * 15, C * 15, C * 15);
+        
+      var controls = new THREE.OrbitControls(camera);
+//      controls.autoRotate = true;
+
+        
+      const geometry = new THREE.SphereGeometry( 3, 32, 32 );
+//      const geometry = new THREE.BoxGeometry( 5,5,5 );
+
+      // マウスとの交差を調べたいものは配列に格納する
+      const meshList = [];             var xyz = [];
+      for (let z = - C/2; z < C/2; z++) {var yy = [];  var yyy = [];
+      for (let y = - C/2; y < C/2; y++) {var xx = [];  var xxx = [];
+      for (let x = - C/2; x < C/2; x++) {
+        const material = new THREE.MeshStandardMaterial({color: 0xffffff});
+
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.x = x * 15 + 7.5;
+        mesh.position.y = y * 15 + 7.5;
+        mesh.position.z = z * 15 + 7.5;
+        scene.add(mesh);
+        meshList.push(mesh);
+        xx.push(mesh);
+        xxx.push(-1);  
+      }
+        yy.push(xx);
+        yyy.push(xxx);
+      }
+        xyz.push(yy);
+        field.push(yyy);
+      }
+      // 平行光源
+      const directionalLight = new THREE.DirectionalLight(0xFFFFFF);
+      directionalLight.position.set(1, 1, 1);
+      scene.add(directionalLight);
+
+      // 環境光源
+      const ambientLight = new THREE.AmbientLight(0x333333);
+      scene.add(ambientLight);
+
+      // レイキャストを作成
+      const raycaster = new THREE.Raycaster();
+
+      canvas.addEventListener('mousemove', handleMouseMove);
+      canvas.addEventListener("mousedown" , handleMouseDown);        
+        
+      tick();
+
+      // マウスを動かしたときのイベント
+      function handleMouseMove(event) {
+        const element = event.currentTarget;
+        // canvas要素上のXY座標
+        const x = event.clientX - element.offsetLeft;
+        const y = event.clientY - element.offsetTop;
+        // canvas要素の幅・高さ
+        const w = element.offsetWidth;
+        const h = element.offsetHeight;
+
+        // -1〜+1の範囲で現在のマウス座標を登録する
+        mouse.x = ( x / w ) * 2 - 1;
+        mouse.y = -( y / h ) * 2 + 1;
+      }
+      var mouseDownFlag = false;
+      function handleMouseDown(event) {
+        mouseDownFlag = true;
+      }
+      // 毎フレーム時に実行されるループイベントです
+      function tick() {
+        controls.update();
+        for (let z = 0; z < C; z++) {
+        for (let y = 0; y < C; y++) {
+        for (let x = 0; x < C; x++) {
+            xyz[z][y][x].material.opacity = 1.0;
+            xyz[z][y][x].material.transparent = false;
+        }
+        }
+        }
+        // レイキャスト = マウス位置からまっすぐに伸びる光線ベクトルを生成
+        for (var v = 0; v < 5; ++v) {
+        raycaster.setFromCamera(look[v], camera);
+
+        // その光線とぶつかったオブジェクトを得る
+        const intersects = raycaster.intersectObjects(meshList);
+
+
+        for (let z = 0; z < C; z++) {
+        for (let y = 0; y < C; y++) {
+        for (let x = 0; x < C; x++) {
+          if(intersects.length > 0 && xyz[z][y][x] === intersects[0].object && intersects[0].distance < 16.0) {
+            xyz[z][y][x].material.opacity = 0.5;
+            xyz[z][y][x].material.transparent = true;
+          }
+        }
+        }
+        }
+             
+        }
+        raycaster.setFromCamera(mouse, camera);
+
+        // その光線とぶつかったオブジェクトを得る
+        const intersects2 = raycaster.intersectObjects(meshList);
+
+        for (let z = 0; z < C; z++) {
+        for (let y = 0; y < C; y++) {
+        for (let x = 0; x < C; x++) {
+          if(intersects2.length > 0 && xyz[z][y][x] === intersects2[0].object) {
+            if (mouseDownFlag) {
+              xyz[z][y][x].material.color.setHex(0xFF0000);
+              tipOver(turn % 2, x, y, z);
+              ++turn;
+            }
+          }
+        }
+        }
+        }
+        var score0 = 0;
+        var score1 = 0;
+        for (let z = 0; z < C; z++) {
+        for (let y = 0; y < C; y++) {
+        for (let x = 0; x < C; x++) {
+        if (field[z][y][x] == 0) {
+          ++score0;
+          xyz[z][y][x].material.color.setHex(0x00FF00);
+        }
+        if (field[z][y][x] == 1) {
+          ++score1;
+          xyz[z][y][x].material.color.setHex(0xFF0000);
+        }
+        }
+        }
+        }
+        mouseDownFlag = false;
+        document.getElementById("score").innerHTML = "GREEN:" + score0 + "<br>" + "RED:" + score1;
+
+        // レンダリング
+        renderer.render(scene, camera);
+        requestAnimationFrame(tick);
+      }
+    }
+  </script>
+</head>
+<body>
+  <canvas id="myCanvas"></canvas>
+  <div id="score" style="font-size: 48px;"></div>
+</body>
+</html>
