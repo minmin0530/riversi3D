@@ -12,36 +12,54 @@
 
     function tipOver(turn, x, y, z) {
 
-  const addx = [1,  1,  1,  1,  1,  1,  1,  1,  1,    0,  0,  0,  0,  0,  0,  0,  0,     -1, -1, -1, -1, -1, -1, -1, -1, -1];
-  const addy = [1,  1,  1,  0,  0,  0, -1, -1, -1,    1,  1,  1,  0,  0, -1, -1, -1,      1,  1,  1,  0,  0,  0, -1, -1, -1];
-  const addz = [1,  0, -1,  1,  0, -1,  1,  0, -1,    1,  0, -1,  1, -1,  1,  0, -1,      1,  0, -1,  1,  0, -1,  1,  0, -1];
-
-  const rangex = [-1, -1, -1, -1, -1, -1, -1, -1, -1,    C,  C,  C,  C,  C,  C,  C,  C,   C,  C,  C,  C,  C,  C,  C,  C,  C];
-  const rangey = [-1, -1, -1,  C,  C,  C,  C,  C,  C,   -1, -1, -1,  C,  C,  C,  C,  C,  -1, -1, -1,  C,  C,  C,  C,  C,  C];
-  const rangez = [-1,  C,  C, -1,  C,  C, -1,  C,  C,   -1,  C,  C, -1,  C, -1,  C,  C,  -1,  C,  C, -1,  C,  C, -1,  C,  C];
-  field[z][y][x] = turn;
-  for (var v = 0; v < 26; ++v) {
-    for (var xx = x - addx[v], yy = y - addy[v], zz = z - addz[v]; xx != rangex[v] && yy != rangey[v] && zz != rangez[v]; xx -= addx[v], yy -= addy[v], zz -= addz[v]) {
-      var breakFlag = false;
-      if (field[zz][yy][xx] == turn) {
-        for (var nonex = xx, noney = yy, nonez = zz; (nonex != x || addx[v] == 0) && (noney != y || addy[v] == 0) && (nonez != z || addz[v] == 0); nonex += addx[v], noney += addy[v], nonez += addz[v] ) {
-          if (field[nonez][noney][nonex] == -1) {
-            breakFlag = true;
+      const addx = [1,  1,  1,  1,  1,  1,  1,  1,  1,    0,  0,  0,  0,  0,  0,  0,  0,     -1, -1, -1, -1, -1, -1, -1, -1, -1];
+      const addy = [1,  1,  1,  0,  0,  0, -1, -1, -1,    1,  1,  1,  0,  0, -1, -1, -1,      1,  1,  1,  0,  0,  0, -1, -1, -1];
+      const addz = [1,  0, -1,  1,  0, -1,  1,  0, -1,    1,  0, -1,  1, -1,  1,  0, -1,      1,  0, -1,  1,  0, -1,  1,  0, -1];
+    
+      const rangex = [-1, -1, -1, -1, -1, -1, -1, -1, -1,    C,  C,  C,  C,  C,  C,  C,  C,   C,  C,  C,  C,  C,  C,  C,  C,  C];
+      const rangey = [-1, -1, -1,  C,  C,  C,  C,  C,  C,   -1, -1, -1,  C,  C,  C,  C,  C,  -1, -1, -1,  C,  C,  C,  C,  C,  C];
+      const rangez = [-1,  C,  C, -1,  C,  C, -1,  C,  C,   -1,  C,  C, -1,  C, -1,  C,  C,  -1,  C,  C, -1,  C,  C, -1,  C,  C];
+      field[z][y][x] = turn;
+      for (var v = 0; v < 26; ++v) {
+        for (var xx = x - addx[v], yy = y - addy[v], zz = z - addz[v]; xx != rangex[v] && yy != rangey[v] && zz != rangez[v]; xx -= addx[v], yy -= addy[v], zz -= addz[v]) {
+          var breakFlag = false;
+          if (field[zz][yy][xx] == turn) {
+            for (var nonex = xx, noney = yy, nonez = zz; (nonex != x || addx[v] == 0) && (noney != y || addy[v] == 0) && (nonez != z || addz[v] == 0); nonex += addx[v], noney += addy[v], nonez += addz[v] ) {
+              if (field[nonez][noney][nonex] == -1) {
+                breakFlag = true;
+                break;
+    	      }
+    	    }
+            if (breakFlag) {
+              break;
+    	    }
+            for (var xxx = x, yyy = y, zzz = z; (xxx != xx || addx[v] == 0) && (yyy != yy || addy[v] == 0) && (zzz != zz || addz[v] == 0); xxx -= addx[v], yyy -= addy[v], zzz -= addz[v]) {
+              field[zzz][yyy][xxx] = turn;
+    	    }  
             break;
-	      }
-	    }
-        if (breakFlag) {
-          break;
-	    }
-        for (var xxx = x, yyy = y, zzz = z; (xxx != xx || addx[v] == 0) && (yyy != yy || addy[v] == 0) && (zzz != zz || addz[v] == 0); xxx -= addx[v], yyy -= addy[v], zzz -= addz[v]) {
-          field[zzz][yyy][xxx] = turn;
-	    }  
-        break;
+          }
+        }
       }
     }
-  }
-}
-
+    var textureCube0;
+    function createCubeMap (geom, imageFile) {
+      var imgPath = '/raycast/clouds1/';
+      var urls = [
+        imgPath+'clouds1_east.bmp',
+        imgPath+'clouds1_west.bmp',
+        imgPath+'clouds1_up.bmp',
+        imgPath+'clouds1_down.bmp',
+        imgPath+'clouds1_north.bmp',
+        imgPath+'clouds1_south.bmp'
+      ];
+      const cubeTextureLoader = new THREE.CubeTextureLoader();
+      //const textureCube = cubeTextureLoader.load(urls);
+      return cubeTextureLoader.load( urls, function( cubeTexture){
+        textureCube0 = cubeTexture;
+        return textureCube0;
+      });
+    }
+      
     function init() {
       // サイズを指定
       const width = 1280;
@@ -61,7 +79,8 @@
 
       // レンダラーを作成
       const renderer = new THREE.WebGLRenderer({
-        canvas: canvas
+        canvas: canvas,
+        antialias: true
       });
       renderer.setPixelRatio(window.devicePixelRatio);
       renderer.setSize(width, height);
@@ -76,8 +95,49 @@
       var controls = new THREE.OrbitControls(camera);
 //      controls.autoRotate = true;
 
+      //skyboxを作成
+      var imgPath = '/raycast/clouds1/';
+      var urls = [
+        imgPath+'clouds1_east.bmp',
+        imgPath+'clouds1_west.bmp',
+        imgPath+'clouds1_up.bmp',
+        imgPath+'clouds1_down.bmp',
+        imgPath+'clouds1_north.bmp',
+        imgPath+'clouds1_south.bmp'
+      ];
+      const cubeTextureLoader = new THREE.CubeTextureLoader();
+      //const textureCube = cubeTextureLoader.load(urls);
+      cubeTextureLoader.load( urls, function( textureCube){
+          
+      textureCube.format = THREE.RGBFormat;
+      textureCube.mapping = THREE.CubeReflectionMapping; // 屈折
+      // CubeMapに基づいて環境を作成できる特殊なshader
+      const shader = THREE.ShaderLib["cube"];
+      shader.uniforms["tCube"].value = textureCube;
+
+      const material = new THREE.ShaderMaterial({
+        fragmentShader: shader.fragmentShader,
+        vertexShader: shader.vertexShader,
+        uniforms: shader.uniforms,
+        depthWrite: false,
+        side: THREE.DoubleSide
+      });
+
+      const skybox = new THREE.Mesh(new THREE.BoxGeometry(10000, 10000, 10000), material);
+      scene.add(skybox);
+
+      // 地面用のPlaneを作成
+      var plane = new THREE.Mesh(
+          new THREE.PlaneGeometry(500, 500, 10, 10),
+          new THREE.MeshLambertMaterial({
+              color: 0xffffff
+          })
+      );
+      plane.position.y = -80;
+      plane.rotation.x = -Math.PI / 2;
         
-      const geometry = new THREE.SphereGeometry( 3, 32, 32 );
+      scene.add(plane);
+        
 //      const geometry = new THREE.BoxGeometry( 5,5,5 );
 
       // マウスとの交差を調べたいものは配列に格納する
@@ -85,16 +145,33 @@
       for (let z = - C/2; z < C/2; z++) {var yy = [];  var yyy = [];
       for (let y = - C/2; y < C/2; y++) {var xx = [];  var xxx = [];
       for (let x = - C/2; x < C/2; x++) {
-        const material = new THREE.MeshStandardMaterial({color: 0xffffff});
+        const geometry = new THREE.SphereGeometry( 3, 32, 32 );
+        const material = new THREE.MeshPhongMaterial({
+            color: 0xffffff,
+            envMap: textureCube,
+            reflectivity: 1.0
+        });
 
         const mesh = new THREE.Mesh(geometry, material);
         mesh.position.x = x * 15 + 7.5;
         mesh.position.y = y * 15 + 7.5;
         mesh.position.z = z * 15 + 7.5;
+        mesh.material.opacity = 0.1;
+        mesh.material.transparent = true;
+//        if(-1 <= x && x >= 1 &&
+//           -1 <= y && y >= 1 &&
+//           -1 <= z && z >= 1) {
+//          mesh.visible = true;
+//        } else {
+//          mesh.visible = false;
+//        }
         scene.add(mesh);
         meshList.push(mesh);
         xx.push(mesh);
         xxx.push(-1);  
+        // 影を有効化
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
       }
         yy.push(xx);
         yyy.push(xxx);
@@ -104,7 +181,7 @@
       }
       // 平行光源
       const directionalLight = new THREE.DirectionalLight(0xFFFFFF);
-      directionalLight.position.set(1, 1, 1);
+      directionalLight.position.set(50,50,50);
       scene.add(directionalLight);
 
       // 環境光源
@@ -116,7 +193,29 @@
 
       canvas.addEventListener('mousemove', handleMouseMove);
       canvas.addEventListener("mousedown" , handleMouseDown);        
-        
+
+          // ライトの影表示を有効化
+      directionalLight.castShadow = true;
+  //    directionalLight.shadow.camera.near    = 0;
+  //    directionalLight.shadow.camera.far     = 50;
+      directionalLight.shadow.camera.top     = 80;
+      directionalLight.shadow.camera.bottom  = -80;
+      directionalLight.shadow.camera.left    = -80;
+      directionalLight.shadow.camera.right   = 80;
+      directionalLight.shadow.mapSize.width  = 2048;
+      directionalLight.shadow.mapSize.height = 2048;
+  
+      // 地面の影を受ける設定を有効化
+      plane.receiveShadow = true;
+  
+      // レンダラーの影レンダリングを有効化
+      renderer.shadowMap.enabled = true;
+  
+//      var directionalLightShadowHelper = new THREE.CameraHelper( directionalLight.shadow.camera);
+//      scene.add( directionalLightShadowHelper);
+//   
+//      var directionalLightHelper = new THREE.DirectionalLightHelper( directionalLight);
+//      scene.add( directionalLightHelper);
       tick();
 
       // マウスを動かしたときのイベント
@@ -137,14 +236,19 @@
       function handleMouseDown(event) {
         mouseDownFlag = true;
       }
+
+      var frameFloatCount = 0.0;
+        
       // 毎フレーム時に実行されるループイベントです
       function tick() {
+        directionalLight.position.set(50 * Math.cos(frameFloatCount), 50, 50 * Math.sin(frameFloatCount));
+        frameFloatCount += 0.006;
         controls.update();
         for (let z = 0; z < C; z++) {
         for (let y = 0; y < C; y++) {
         for (let x = 0; x < C; x++) {
-            xyz[z][y][x].material.opacity = 1.0;
-            xyz[z][y][x].material.transparent = false;
+//            xyz[z][y][x].material.opacity = 1.0;
+//            xyz[z][y][x].material.transparent = false;
         }
         }
         }
@@ -160,8 +264,8 @@
         for (let y = 0; y < C; y++) {
         for (let x = 0; x < C; x++) {
           if(intersects.length > 0 && xyz[z][y][x] === intersects[0].object && intersects[0].distance < 16.0) {
-            xyz[z][y][x].material.opacity = 0.5;
-            xyz[z][y][x].material.transparent = true;
+//            xyz[z][y][x].material.opacity = 0.5;
+//            xyz[z][y][x].material.transparent = true;
           }
         }
         }
@@ -177,7 +281,7 @@
         for (let y = 0; y < C; y++) {
         for (let x = 0; x < C; x++) {
           if(intersects2.length > 0 && xyz[z][y][x] === intersects2[0].object) {
-            if (mouseDownFlag) {
+            if (mouseDownFlag && field[z][y][x] == -1) {
               xyz[z][y][x].material.color.setHex(0xFF0000);
               tipOver(turn % 2, x, y, z);
               ++turn;
@@ -193,10 +297,14 @@
         for (let x = 0; x < C; x++) {
         if (field[z][y][x] == 0) {
           ++score0;
+          xyz[z][y][x].material.opacity = 1.0;
+          xyz[z][y][x].material.transparent = false;
           xyz[z][y][x].material.color.setHex(0x00FF00);
         }
         if (field[z][y][x] == 1) {
           ++score1;
+          xyz[z][y][x].material.opacity = 1.0;
+          xyz[z][y][x].material.transparent = false;
           xyz[z][y][x].material.color.setHex(0xFF0000);
         }
         }
@@ -209,6 +317,8 @@
         renderer.render(scene, camera);
         requestAnimationFrame(tick);
       }
+      });
+
     }
   </script>
 </head>
