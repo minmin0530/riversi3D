@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo Hello World"
+    "test": "mocha test/test.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,10 @@
   "bugs": {
     "url": "https://github.com/minmin0530/riversi3D/issues"
   },
-  "homepage": "https://github.com/minmin0530/riversi3D#readme"
+  "homepage": "https://github.com/minmin0530/riversi3D#readme",
+  "dependencies": {},
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "mocha": "^4.0.1"
+  }
 }
