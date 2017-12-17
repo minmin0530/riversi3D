@@ -1,0 +1,19 @@
+{
+  "name": "riversi3d",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo Hello World"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/minmin0530/riversi3D.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/minmin0530/riversi3D/issues"
+  },
+  "homepage": "https://github.com/minmin0530/riversi3D#readme"
+}
