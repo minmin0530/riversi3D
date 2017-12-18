@@ -15,7 +15,7 @@ npm install
 ```
 ### browser
 ```
-node index.js
+npm start
 ```
   
 アクセス  
