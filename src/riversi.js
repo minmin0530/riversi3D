@@ -1,4 +1,4 @@
-const C = 2;
+const C = 4;
 const addx = [1,  1,  1,  1,  1,  1,  1,  1,  1,    0,  0,  0,  0,  0,  0,  0,  0,     -1, -1, -1, -1, -1, -1, -1, -1, -1];
 const addy = [1,  1,  1,  0,  0,  0, -1, -1, -1,    1,  1,  1,  0,  0, -1, -1, -1,      1,  1,  1,  0,  0,  0, -1, -1, -1];
 const addz = [1,  0, -1,  1,  0, -1,  1,  0, -1,    1,  0, -1,  1, -1,  1,  0, -1,      1,  0, -1,  1,  0, -1,  1,  0, -1];
@@ -42,5 +42,34 @@ class Riversi {
     }
     return this.field;
   }
+  findPlacesWhereYouCanPut(turn) {
+    const begin = [0, C - 1];
+    const end   = [C - 1, 0];
+    const add   = [1, -1];
+    const terminate = [C, -1];
+    const terminateCross = [C, 0];
+    var canPut2 = [];
+    for (var v = 0; v < 2; ++v) {
+    for (var z = begin[v]; z != end[v]; z += add[v]) {
+    for (var y = begin[v]; y != end[v]; y += add[v]) {
+    for (var x = begin[v]; x != end[v]; x += add[v]) {
+  
+    if (this.field[z][y][x] == -1) {
+      if (this.field[z][y][x + add[v]] != -1 && this.field[z][y][x + add[v]] != turn) {
+        for (var xx = x + add[v]; xx != terminate[v]; xx += add[v]) {
+          if (this.field[z][y][xx] == turn) {
+            canPut2.push({'x':x,'y':y,'z':z});
+            break;
+          }
+        }
+      }
+    }
+
+    }
+    }
+    }
+
+    }
+    return canPut2;
+  }
 };
-module.exports = Riversi;
